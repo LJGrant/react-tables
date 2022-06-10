@@ -1,11 +1,29 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
 
-const TableHeader: React.FC = () => {
+type TableHeadProps = {
+  children: ReactElement
+  masterCheck: boolean
+  onMasterCheck: () => {}
+}
+
+const TableHeader: React.FC<TableHeadProps> = ({
+  children,
+  masterCheck,
+  onMasterCheck,
+}) => {
   return (
     <thead>
       <tr>
-        <th>thing 1</th>
-        <th>thing 2</th>
+        <th>
+          <input
+            type="checkbox"
+            className="form-check-input"
+            checked={masterCheck}
+            id="mastercheck"
+            onChange={onMasterCheck}
+          />
+        </th>
+        {children}
       </tr>
     </thead>
   )

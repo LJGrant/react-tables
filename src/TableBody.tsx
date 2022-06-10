@@ -1,22 +1,25 @@
-import React from 'react'
+import React, { ReactElement } from 'react'
+import { Item } from './Table'
 
-const TableBody: React.FC = () => {
-  return (
-    <tbody>
-      <tr>
-        <th>foo 1</th>
-        <th>bar 1</th>
-      </tr>
-      <tr>
-        <th>bar 2</th>
-        <th>foo 2</th>
-      </tr>
-      <tr>
-        <th>foo 3</th>
-        <th>bar 3</th>
-      </tr>
-    </tbody>
-  )
+type BodyProps = {
+  children: ReactElement
+  selectedItems: Item[]
+  onItemCheck: () => {}
+}
+
+const TableBody: React.FC<BodyProps> = ({
+  children,
+  selectedItems,
+  onItemCheck,
+}) => {
+  const childrenWithProps = React.Children.map(children, (child) => {
+    return React.cloneElement(child, {
+      selectedItems,
+      onItemCheck,
+    })
+  })
+
+  return <tbody>{childrenWithProps}</tbody>
 }
 
 export default TableBody
