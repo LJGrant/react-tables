@@ -28,37 +28,40 @@ const TableHead: React.FC<TableHeadProps> = ({
 
   const sort = (slug: string) => {
     if (sortParam.slug === slug && sortParam.direction === 'asc') {
-      setSortedItems((prevState: Item[]) =>
-        prevState.sort((a, b) => {
+      // sorting by slug but in reverse
+      setSortedItems((prevState: Item[]) => [
+        ...prevState.sort((a, b) => {
           if (a[slug] > b[slug]) return -1
           if (a[slug] < b[slug]) return 1
           return 0
-        })
-      )
+        }),
+      ])
       setSortParam({
         slug,
         direction: 'desc',
       })
     } else if (sortParam.slug === slug && sortParam.direction === 'desc') {
-      setSortedItems((prevState: Item[]) =>
-        prevState.sort((a, b) => {
+      // talking sorting off slug and returning to sorting by init slug
+      setSortedItems((prevState: Item[]) => [
+        ...prevState.sort((a, b) => {
           if (a[headers[0].slug] < b[headers[0].slug]) return -1
           if (a[headers[0].slug] > b[headers[0].slug]) return 1
           return 0
-        })
-      )
+        }),
+      ])
       setSortParam({
         slug: headers[0].slug,
         direction: '',
       })
     } else {
-      setSortedItems((prevState: Item[]) =>
-        prevState.sort((a, b) => {
+      // sorting by slug in ascending order
+      setSortedItems((prevState: Item[]) => [
+        ...prevState.sort((a, b) => {
           if (a[slug] < b[slug]) return -1
           if (a[slug] > b[slug]) return 1
           return 0
-        })
-      )
+        }),
+      ])
       setSortParam({
         slug,
         direction: 'asc',

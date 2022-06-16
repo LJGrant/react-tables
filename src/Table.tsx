@@ -49,9 +49,9 @@ const Table: React.FC<TableProps> = ({
   search = false,
 }) => {
   const [sortedItems, setSortedItems] = useState<Item[]>(items)
+  const [filteredItems, setFilteredItems] = useState<Item[]>(items)
   const [masterCheck, setMasterCheck] = useState<boolean>(false)
   const [selectedItems, setSelectedItems] = useState<Item[]>([])
-  const [searchParam, setSearch] = useState('')
 
   useEffect(() => {
     if (selectedItems.length === 0) {
@@ -61,7 +61,6 @@ const Table: React.FC<TableProps> = ({
 
   useEffect(() => {
     setSortedItems(items)
-    setMasterCheck(false)
   }, [items])
 
   const onItemCheck = async (
@@ -85,7 +84,7 @@ const Table: React.FC<TableProps> = ({
       setSelectedItems([])
       setMasterCheck(false)
     } else {
-      setSelectedItems(items)
+      setSelectedItems(filteredItems)
       setMasterCheck(true)
     }
   }
@@ -95,9 +94,12 @@ const Table: React.FC<TableProps> = ({
       <div className={styles?.searchBar?.join(' ')}>
         {search && (
           <SearchBar
-            styles={styles}
-            searchParam={searchParam}
-            setSearch={setSearch}
+            {...{
+              styles,
+              setFilteredItems,
+              sortedItems,
+              headers,
+            }}
           />
         )}
         {actions?.length > 0 && <Actions {...{ actions, selectedItems }} />}
@@ -107,7 +109,7 @@ const Table: React.FC<TableProps> = ({
           {...{ styles, masterCheck, onMasterCheck, headers, setSortedItems }}
         />
         <tbody>
-          {sortedItems.map((item, index) => (
+          {filteredItems.map((item, index) => (
             <tr
               className={styles?.tr?.join(' ')}
               onClick={() => {}}
@@ -118,7 +120,7 @@ const Table: React.FC<TableProps> = ({
                   onClick={(e) => e.stopPropagation()}
                   type="checkbox"
                   checked={selectedItems.includes(item)}
-                  id="rowcheck{item.id}"
+                  id={`rowcheck-${index}`}
                   onChange={(e) => onItemCheck(e, item)}
                 />
               </td>
