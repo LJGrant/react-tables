@@ -1,20 +1,25 @@
-import React, { ReactElement, useState } from 'react'
+import React from 'react'
+import { Styles } from './Table'
 
 type SearchBarProps = {
-  className?: string
-  children: ReactElement
+  styles?: Styles
+  searchParam: string
+  setSearch: Function
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ className, children }) => {
-  const [search, setSearch] = useState('')
-
+const SearchBar: React.FC<SearchBarProps> = ({
+  styles,
+  searchParam,
+  setSearch,
+}) => {
   return (
-    <tr className={className}>
-      <th colSpan={5}>
-        <input value={search} onChange={(e) => setSearch(e.target.value)} />
-        {children}
-      </th>
-    </tr>
+    <input
+      className={styles?.searchBar?.join(' ')}
+      value={searchParam}
+      onChange={(e) => {
+        setSearch(e.target.value)
+      }}
+    />
   )
 }
 

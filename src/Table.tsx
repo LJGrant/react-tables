@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react'
+import Actions from './Actions'
+import SearchBar from './SearchBar'
+import TableHead from './TableHead'
 
 export interface Item {
   id: string | number
@@ -30,7 +33,7 @@ export interface Styles {
   td?: string[]
 }
 
-type TableProps = {
+export interface TableProps {
   styles?: Styles
   items: Item[]
   headers: Header[]
@@ -45,14 +48,10 @@ const Table: React.FC<TableProps> = ({
   actions = [],
   search = false,
 }) => {
-  const [sortedItems, setSortedItems] = useState(items)
+  const [sortedItems, setSortedItems] = useState<Item[]>(items)
   const [masterCheck, setMasterCheck] = useState<boolean>(false)
   const [selectedItems, setSelectedItems] = useState<Item[]>([])
   const [searchParam, setSearch] = useState('')
-  const [sortParam, setSortParam] = useState({
-    slug: headers[0].slug,
-    direction: '',
-  })
 
   useEffect(() => {
     if (selectedItems.length === 0) {
@@ -62,6 +61,7 @@ const Table: React.FC<TableProps> = ({
 
   useEffect(() => {
     setSortedItems(items)
+    setMasterCheck(false)
   }, [items])
 
   const onItemCheck = async (
@@ -90,100 +90,22 @@ const Table: React.FC<TableProps> = ({
     }
   }
 
-  const sort = (slug: string) => {
-    if (sortParam.slug === slug && sortParam.direction === 'asc') {
-      setSortedItems((prevState) =>
-        prevState.sort((a, b) => {
-          if (a[slug] > b[slug]) return -1
-          if (a[slug] < b[slug]) return 1
-          return 0
-        })
-      )
-      setSortParam({
-        slug,
-        direction: 'desc',
-      })
-    } else if (sortParam.slug === slug && sortParam.direction === 'desc') {
-      setSortedItems((prevState) =>
-        prevState.sort((a, b) => {
-          if (a[headers[0].slug] < b[headers[0].slug]) return -1
-          if (a[headers[0].slug] > b[headers[0].slug]) return 1
-          return 0
-        })
-      )
-      setSortParam({
-        slug: headers[0].slug,
-        direction: '',
-      })
-    } else {
-      setSortedItems((prevState) =>
-        prevState.sort((a, b) => {
-          if (a[slug] < b[slug]) return -1
-          if (a[slug] > b[slug]) return 1
-          return 0
-        })
-      )
-      setSortParam({
-        slug,
-        direction: 'asc',
-      })
-    }
-  }
-
   return (
     <div className={styles?.tableContainer?.join(' ')}>
       <div className={styles?.searchBar?.join(' ')}>
         {search && (
-          <input
-            className="search-input"
-            value={searchParam}
-            onChange={(e) => {
-              setSearch(e.target.value)
-            }}
+          <SearchBar
+            styles={styles}
+            searchParam={searchParam}
+            setSearch={setSearch}
           />
         )}
-        {actions?.length > 0 &&
-          actions?.map(({ label, action, classNames }, index) => (
-            <button
-              className={classNames?.join(' ')}
-              onClick={() => action(selectedItems)}
-              key={`action-${index}`}
-            >
-              {label}
-            </button>
-          ))}
+        {actions?.length > 0 && <Actions {...{ actions, selectedItems }} />}
       </div>
       <table className={styles?.table?.join(' ')}>
-        <thead>
-          <tr className={styles?.tr?.join(' ')}>
-            <th className={styles?.th?.join(' ')}>
-              <input
-                type="checkbox"
-                checked={masterCheck}
-                id="mastercheck"
-                onChange={onMasterCheck}
-              />
-            </th>
-            {headers.map((header, index) => (
-              <th
-                key={`header-${index}`}
-                className={styles?.th?.join(' ')}
-                onClick={() => sort(header.slug)}
-              >
-                {header.label}
-                {sortParam.slug === header.slug && (
-                  <>
-                    {sortParam.direction === 'desc' ? (
-                      <>&#x25B2;</>
-                    ) : (
-                      sortParam.direction === 'asc' && <>&#x25BC;</>
-                    )}
-                  </>
-                )}
-              </th>
-            ))}
-          </tr>
-        </thead>
+        <TableHead
+          {...{ styles, masterCheck, onMasterCheck, headers, setSortedItems }}
+        />
         <tbody>
           {sortedItems.map((item, index) => (
             <tr
