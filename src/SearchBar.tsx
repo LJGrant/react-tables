@@ -34,7 +34,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   return (
     <input
-      className={styles?.searchBar?.join(' ')}
+      className={styles?.searchInput?.join(' ')}
       value={searchParam}
       onChange={(e) => {
         setSearch(e.target.value)

@@ -5,6 +5,7 @@ import TableHead from './TableHead'
 
 export interface Item {
   id: string | number
+  [key: string]: string | number
 }
 
 export interface Header {
@@ -25,6 +26,7 @@ export interface Action {
 export interface Styles {
   tableContainer?: string[]
   searchBar?: string[]
+  searchInput?: string[]
   table?: string[]
   thead?: string[]
   tbody?: string[]
