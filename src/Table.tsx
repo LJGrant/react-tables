@@ -11,6 +11,8 @@ export interface Item {
 export interface Header {
   label: string
   slug: string
+  searchable?: boolean
+  sortable?: boolean
 }
 
 export interface DisplayProps {
@@ -33,6 +35,7 @@ export interface Styles {
   tr?: string[]
   th?: string[]
   td?: string[]
+  indicator?: string[]
 }
 
 export interface TableProps {

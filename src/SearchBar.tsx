@@ -19,7 +19,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
   useEffect(() => {
     if (searchParam !== '') {
       const search = searchParam.toLowerCase()
-      const keys = headers.map(({ slug }) => slug)
+      const keys = headers
+        .filter((header) => header.searchable !== false)
+        .map(({ slug }) => slug)
       setFilteredItems(
         sortedItems.filter((item) =>
           keys.some((key) =>

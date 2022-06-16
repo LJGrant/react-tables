@@ -83,16 +83,24 @@ const TableHead: React.FC<TableHeadProps> = ({
         {headers.map((header, index) => (
           <th
             key={`header-${index}`}
-            className={styles?.th?.join(' ')}
-            onClick={() => sort(header.slug)}
+            className={`${styles?.th ? styles.th.join(' ') : ''} ${
+              header.sortable !== false ? 'sortable' : ''
+            }`}
+            onClick={() => {
+              header.sortable !== false && sort(header.slug)
+            }}
           >
             {header.label}
             {sortParam.slug === header.slug && (
               <>
                 {sortParam.direction === 'desc' ? (
-                  <>&#x25B2;</>
+                  <span className={styles?.indicator?.join(' ')}>&#x25B2;</span>
                 ) : (
-                  sortParam.direction === 'asc' && <>&#x25BC;</>
+                  sortParam.direction === 'asc' && (
+                    <span className={styles?.indicator?.join(' ')}>
+                      &#x25BC;
+                    </span>
+                  )
                 )}
               </>
             )}

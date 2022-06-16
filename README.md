@@ -142,8 +142,8 @@ The _id_ property is only required property of the Item object.
 
 - _Label_ : String that will be displayed on the column head text
 - _slug_ : String of item property that the header is associated to
-- _searchable_ : Future property to allow the table to be searchable by this column
-- _sortable_ : Future property to allow the table to be sortable by this column
+- _searchable_ : Boolean property to allow the table to be searchable by this column
+- _sortable_ : Boolean property to allow the table to be sortable by this column
 
 ## Search
 
@@ -172,3 +172,4 @@ Avilable objects to style:
 - tr
 - th
 - td
+- indicator: arrow indicator that appears on sortable headers
