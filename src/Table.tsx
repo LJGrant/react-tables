@@ -1,8 +1,8 @@
 import React, { ReactElement, useEffect, useState } from 'react'
 import TableBody from './TableBody'
-import TableHeader from './TableHeader'
+import TableHead from './TableHead'
 import TableRow from './TableRow'
-import './styles.scss'
+import SearchBar from './SearchBar'
 
 export interface Item {
   id: string | number
@@ -62,11 +62,12 @@ const Table: React.FC<TableProps> = ({ className, children, items }) => {
     })
   })
 
-  return <table className={`${className} table`}>{childrenWithProps}</table>
+  return <table className={`${className}`}>{childrenWithProps}</table>
 }
 
 export default Object.assign(Table, {
   Body: TableBody,
-  Header: TableHeader,
+  SearchBar: SearchBar,
+  Head: TableHead,
   Row: TableRow,
 })

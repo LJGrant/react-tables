@@ -27,7 +27,6 @@ const TableRow: React.FC<RowProps> = ({
           onClick={(e) => e.stopPropagation()}
           type="checkbox"
           checked={selectedItems.includes(item)}
-          className="form-check-input"
           id="rowcheck{item.id}"
           onChange={(e) => onItemCheck(e, item)}
         />

@@ -6,7 +6,7 @@ type TableHeadProps = {
   onMasterCheck: () => {}
 }
 
-const TableHeader: React.FC<TableHeadProps> = ({
+const TableHead: React.FC<TableHeadProps> = ({
   children,
   masterCheck,
   onMasterCheck,
@@ -17,7 +17,6 @@ const TableHeader: React.FC<TableHeadProps> = ({
         <th>
           <input
             type="checkbox"
-            className="form-check-input"
             checked={masterCheck}
             id="mastercheck"
             onChange={onMasterCheck}
@@ -29,4 +28,4 @@ const TableHeader: React.FC<TableHeadProps> = ({
   )
 }
 
-export default TableHeader
+export default TableHead
