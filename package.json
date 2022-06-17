@@ -9,6 +9,10 @@
     "node": ">=8",
     "npm": ">=5"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LJGrant/react-tables"
+  },
   "scripts": {
     "build": "rollup -c",
     "start": "rollup -c -w"

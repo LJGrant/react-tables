@@ -1,15 +1,26 @@
-import React, { useEffect, useState } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 import Actions from './Actions'
 import SearchBar from './SearchBar'
 import TableHead from './TableHead'
 
+export interface BetterItem {
+  value: string | number
+  display: string | number | ReactNode
+}
+
+export function isBetterItem(
+  item: BetterItem | number | string
+): item is BetterItem {
+  return (item as BetterItem).display !== undefined
+}
+
 export interface Item {
   id: string | number
-  [key: string]: string | number
+  [key: string]: string | number | BetterItem
 }
 
 export interface Header {
-  label: string
+  label: string | number | ReactNode
   slug: string
   searchable?: boolean
   sortable?: boolean
@@ -29,6 +40,9 @@ export interface Styles {
   tableContainer?: string[]
   searchBar?: string[]
   searchInput?: string[]
+  searchInputWrapper?: string[]
+  buttonWrapper?: string[]
+  checkbox?: string[]
   table?: string[]
   thead?: string[]
   tbody?: string[]
@@ -94,6 +108,13 @@ const Table: React.FC<TableProps> = ({
     }
   }
 
+  const inner = (item: string | number | BetterItem) => {
+    if (isBetterItem(item)) {
+      return item.display
+    }
+    return item
+  }
+
   return (
     <div className={styles?.tableContainer?.join(' ')}>
       <div className={styles?.searchBar?.join(' ')}>
@@ -107,7 +128,11 @@ const Table: React.FC<TableProps> = ({
             }}
           />
         )}
-        {actions?.length > 0 && <Actions {...{ actions, selectedItems }} />}
+        {actions?.length > 0 && (
+          <div className={styles?.buttonWrapper?.join(' ')}>
+            <Actions {...{ actions, selectedItems }} />
+          </div>
+        )}
       </div>
       <table className={styles?.table?.join(' ')}>
         <TableHead
@@ -122,6 +147,7 @@ const Table: React.FC<TableProps> = ({
             >
               <td className={styles?.td?.join(' ')}>
                 <input
+                  className={styles?.checkbox?.join(' ')}
                   onClick={(e) => e.stopPropagation()}
                   type="checkbox"
                   checked={selectedItems.includes(item)}
@@ -134,7 +160,7 @@ const Table: React.FC<TableProps> = ({
                   className={styles?.td?.join(' ')}
                   key={`item-${index}-${tindex}`}
                 >
-                  {item[slug]}
+                  {inner(item[slug])}
                 </td>
               ))}
             </tr>
