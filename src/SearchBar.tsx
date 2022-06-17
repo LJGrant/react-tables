@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Header, Item, Styles } from './Table'
+import { Header, isBetterItem, Item, Styles } from './Table'
 
 type SearchBarProps = {
   styles?: Styles
@@ -24,9 +24,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
         .map(({ slug }) => slug)
       setFilteredItems(
         sortedItems.filter((item) =>
-          keys.some((key) =>
-            item[key].toString().toLowerCase().includes(search)
-          )
+          keys.some((key) => {
+            const itemKey = item[key]
+            if (isBetterItem(itemKey)) {
+              return itemKey.value.toString().toLowerCase().includes(search)
+            }
+            return itemKey.toString().toLowerCase().includes(search)
+          })
         )
       )
     } else {
@@ -42,6 +46,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         onChange={(e) => {
           setSearch(e.target.value)
         }}
+        placeholder="Search"
       />
     </div>
   )
