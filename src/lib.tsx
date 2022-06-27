@@ -7,12 +7,13 @@ export interface Action {
 }
 
 export interface BetterItem {
-  value: string | number
+  value?: string | number
   display: string | number | ReactNode
 }
 
 export interface FunctionalItem {
-  display: ({ ...args }: any) => React.ReactNode
+  value?: string | number
+  functionalDisplay: ({ ...args }: any) => React.ReactNode
 }
 
 export function isBetterItem(item: unknown): item is BetterItem {
@@ -20,10 +21,7 @@ export function isBetterItem(item: unknown): item is BetterItem {
 }
 
 export function isFunctionalItem(item: unknown): item is FunctionalItem {
-  return (
-    (item as FunctionalItem).display !== undefined &&
-    (item as BetterItem).value === undefined
-  )
+  return (item as FunctionalItem).functionalDisplay !== undefined
 }
 
 export interface DisplayProps {

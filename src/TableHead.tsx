@@ -23,9 +23,13 @@ const TableHead: React.FC<TableHeadProps> = ({
 
   function compare<T>(a: T, b: T, x: number): number {
     if (isBetterItem(a) && isBetterItem(b)) {
-      if (a.value > b.value) return -x
-      if (a.value < b.value) return x
-      return 0
+      if (a.value && b.value) {
+        if (a.value > b.value) return -x
+        if (a.value < b.value) return x
+        return 0
+      } else {
+        return 0
+      }
     } else {
       if (a > b) return -x
       if (a < b) return x

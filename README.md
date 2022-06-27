@@ -15,48 +15,48 @@ Import component into your react page
 ## Example Use
 
 ```jsx
-import { useState } from 'react'
-import Table from 'react-tables'
+import React, { useState } from 'react'
+import Table from 'lj-react-tables'
+import { v4 as uuidv4 } from 'uuid'
+import { Item, BetterItem, FunctionalItem } from 'lj-react-tables/dist/lib'
+interface AppItem extends Item {
+  id: string
+  label: BetterItem
+  foo: string
+  bar: string
+  edit: FunctionalItem
+}
 
 const App = () => {
-  const [items, setItems] = useState([
-    {
-      id: 1,
-      label: 'label',
-      foo: 'foo',
-      bar: 'bar',
-    },
-    {
-      id: 2,
-      label: 'label',
-      foo: 'foo',
-      bar: 'bar',
-    },
-    {
-      id: 3,
-      label: 'label',
-      foo: 'foo',
-      bar: 'bar',
-    },
-    {
-      id: 4,
-      label: 'label',
-      foo: 'foo',
-      bar: 'bar',
-    },
-    {
-      id: 5,
-      label: 'label',
-      foo: 'foo',
-      bar: 'bar',
-    },
-    {
-      id: 6,
-      label: 'label',
-      foo: 'foo',
-      bar: 'bar',
-    },
-  ])
+  const displayItem = (item: AppItem): React.ReactNode => (
+    <button onClick={() => alert(item.label.value)}>{item.bar} Me</button>
+  )
+
+  const makeItems = (x: number) => {
+    const leItems: AppItem[] = []
+    for (let i = 0; i < x; i++) {
+      const id = uuidv4()
+      leItems[i] = {
+        id: id.substring(0, 5),
+        label: {
+          value: id.substring(9, 13),
+          display: (
+            <>
+              <span>THING</span> {id.substring(9, 13)}
+            </>
+          ),
+        },
+        foo: 'foo' + id.substring(14, 18),
+        bar: 'bar' + id.substring(19, 22),
+        edit: {
+          functionalDisplay: displayItem,
+        },
+      }
+    }
+    return leItems
+  }
+
+  const [items, setItems] = useState<AppItem[]>(makeItems(8))
 
   const headers = [
     {
@@ -68,32 +68,32 @@ const App = () => {
       slug: 'label',
     },
     {
-      label: 'Foo Header',
+      label: 'Foo',
       slug: 'foo',
+      sortable: false,
     },
     {
-      label: 'Bar Header',
+      label: 'Barington',
       slug: 'bar',
+      searchable: false,
+    },
+    {
+      label: 'Edit',
+      slug: 'edit',
+      searchable: false,
+      sortable: false,
     },
   ]
 
-  const deleteItems = (items) => {
+  const deleteItems = (items: AppItem[]): void => {
     const ids = items.map((item) => item.id)
     setItems((prevState) => [
       ...prevState.filter((item) => !ids.includes(item.id)),
     ])
   }
 
-  const addItem = () => {
-    setItems((prevState) => [
-      ...prevState,
-      {
-        id: prevState.length + 1,
-        label: 'one',
-        foo: 'foo',
-        bar: 'bar',
-      },
-    ])
+  const addItem = (): void => {
+    setItems((prevState) => [...prevState, ...makeItems(1)])
   }
 
   const actions = [
@@ -110,7 +110,18 @@ const App = () => {
   ]
 
   const styles = {
-    table: ['table', 'table-striped'],
+    tableContainer: ['container'],
+    searchBar: ['manage-head', 'row'],
+    searchInputWrapper: ['col-auto'],
+    buttonWrapper: ['col-auto'],
+    searchInput: ['form-control'],
+    table: [
+      'table',
+      'table-sm',
+      'table-striped',
+      'table-bordered',
+      'table-hover',
+    ],
   }
 
   return (
@@ -130,6 +141,7 @@ const App = () => {
 }
 
 export default App
+
 ```
 
 ## Items & Headers
@@ -150,6 +162,8 @@ Items is an array of objects with keys relating to the header slugs
 ### Item Object
 
 Within the Item object, the value of each property will be displalied in the column of it's associated Header slug. Alternitivly, that value could be set as an object with keys of _display_ and _value_. This will allow you to set the _display_ property to a React Componant but still provide search & sort functionality for the underlying value.
+
+Additionally, you can set up a functioning component with a onClick or other functionality attached using functionalDisplay property instead of the display property.
 
 ## Search
 

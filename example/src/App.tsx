@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
-import Table from 'lj-react-tables'
+import Table, { Item, BetterItem, FunctionalItem } from 'lj-react-tables'
 import { v4 as uuidv4 } from 'uuid'
-import { Item, BetterItem, FunctionalItem } from 'lj-react-tables/dist/lib'
 interface AppItem extends Item {
   id: string
   label: BetterItem
@@ -12,7 +11,7 @@ interface AppItem extends Item {
 
 const App = () => {
   const displayItem = (item: AppItem): React.ReactNode => (
-    <button onClick={() => alert(item.id)}>Click Me</button>
+    <button onClick={() => alert(item.label.value)}>{item.bar} Me</button>
   )
 
   const makeItems = (x: number) => {
@@ -32,7 +31,7 @@ const App = () => {
         foo: 'foo' + id.substring(14, 18),
         bar: 'bar' + id.substring(19, 22),
         edit: {
-          display: displayItem,
+          functionalDisplay: displayItem,
         },
       }
     }

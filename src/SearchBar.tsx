@@ -27,7 +27,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           keys.some((key) => {
             const itemKey = item[key]
             if (isBetterItem(itemKey)) {
-              return itemKey.value.toString().toLowerCase().includes(search)
+              return itemKey.value?.toString().toLowerCase().includes(search)
             }
             return itemKey.toString().toLowerCase().includes(search)
           })
