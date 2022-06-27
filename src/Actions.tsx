@@ -1,7 +1,7 @@
 import React from 'react'
-import { Action, Item } from './Table'
+import { Action, Item } from './lib'
 
-export interface ActionsProps {
+interface ActionsProps {
   actions: Action[]
   selectedItems: Item[]
 }

@@ -1,12 +1,7 @@
 import React, { useState } from 'react'
-import { BetterItem, Header, isBetterItem, Item, Styles } from './Table'
+import { Header, isBetterItem, Item, Styles, SortParam } from './lib'
 
-export interface SortParam {
-  slug: string
-  direction: string
-}
-
-type TableHeadProps = {
+interface TableHeadProps {
   styles?: Styles
   masterCheck: boolean
   onMasterCheck: () => void
@@ -26,11 +21,7 @@ const TableHead: React.FC<TableHeadProps> = ({
     direction: '',
   })
 
-  const compare = (
-    a: string | number | BetterItem,
-    b: string | number | BetterItem,
-    x: number
-  ) => {
+  function compare<T>(a: T, b: T, x: number): number {
     if (isBetterItem(a) && isBetterItem(b)) {
       if (a.value > b.value) return -x
       if (a.value < b.value) return x
@@ -42,7 +33,7 @@ const TableHead: React.FC<TableHeadProps> = ({
     }
   }
 
-  const sort = (slug: string) => {
+  const sort = (slug: string): void => {
     if (sortParam.slug === slug && sortParam.direction === 'asc') {
       // sorting by slug but in reverse
       setSortedItems((prevState: Item[]) => [

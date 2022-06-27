@@ -138,12 +138,18 @@ The Headers object will determain what keys from your items array are dislpayed 
 
 The _id_ property is only required property of the Item object.
 
+Items is an array of objects with keys relating to the header slugs
+
 ### Header Object
 
 - _label_ : String that will be displayed on the column head text
 - _slug_ : String of item property that the header is associated to
 - _searchable_ : Boolean property to allow the table to be searchable by this column
 - _sortable_ : Boolean property to allow the table to be sortable by this column
+
+### Item Object
+
+Within the Item object, the value of each property will be displalied in the column of it's associated Header slug. Alternitivly, that value could be set as an object with keys of _display_ and _value_. This will allow you to set the _display_ property to a React Componant but still provide search & sort functionality for the underlying value.
 
 ## Search
 
@@ -166,6 +172,8 @@ Avilable objects to style:
 - tableContainer: Container wrapping whole component
 - searchBar: div containing the search bar and action buttons
 - searchInput: the search input
+- searchInputWrapper: div wrapping the search input
+- buttonWrapper: div wrapping action buttons
 - table
 - thead
 - tbody

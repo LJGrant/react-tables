@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { Header, isBetterItem, Item, Styles } from './Table'
+import { Header, isBetterItem, Item, Styles } from './lib'
 
-type SearchBarProps = {
+interface SearchBarProps {
   styles?: Styles
   setFilteredItems: Function
   sortedItems: Item[]

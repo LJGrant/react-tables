@@ -1,56 +1,15 @@
-import React, { ReactNode, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Actions from './Actions'
 import SearchBar from './SearchBar'
 import TableHead from './TableHead'
-
-export interface BetterItem {
-  value: string | number
-  display: string | number | ReactNode
-}
-
-export function isBetterItem(
-  item: BetterItem | number | string
-): item is BetterItem {
-  return (item as BetterItem).display !== undefined
-}
-
-export interface Item {
-  id: string | number
-  [key: string]: string | number | BetterItem
-}
-
-export interface Header {
-  label: string | number | ReactNode
-  slug: string
-  searchable?: boolean
-  sortable?: boolean
-}
-
-export interface DisplayProps {
-  action: Function
-}
-
-export interface Action {
-  action: Function
-  label: string
-  classNames: string[]
-}
-
-export interface Styles {
-  tableContainer?: string[]
-  searchBar?: string[]
-  searchInput?: string[]
-  searchInputWrapper?: string[]
-  buttonWrapper?: string[]
-  checkbox?: string[]
-  table?: string[]
-  thead?: string[]
-  tbody?: string[]
-  tr?: string[]
-  th?: string[]
-  td?: string[]
-  indicator?: string[]
-}
+import {
+  Item,
+  Styles,
+  Header,
+  Action,
+  isBetterItem,
+  isFunctionalItem,
+} from './lib'
 
 export interface TableProps {
   styles?: Styles
@@ -85,7 +44,7 @@ const Table: React.FC<TableProps> = ({
   const onItemCheck = async (
     e: React.ChangeEvent<HTMLInputElement>,
     item: Item
-  ) => {
+  ): Promise<void> => {
     if (e.target.checked) {
       setSelectedItems((prevState) => [...prevState, item])
       setMasterCheck(true)
@@ -98,7 +57,7 @@ const Table: React.FC<TableProps> = ({
     }
   }
 
-  const onMasterCheck = () => {
+  const onMasterCheck = (): void => {
     if (masterCheck) {
       setSelectedItems([])
       setMasterCheck(false)
@@ -108,11 +67,13 @@ const Table: React.FC<TableProps> = ({
     }
   }
 
-  const inner = (item: string | number | BetterItem) => {
-    if (isBetterItem(item)) {
-      return item.display
+  function inner<T>(slugProp: T, item: Item) {
+    if (isBetterItem(slugProp)) {
+      return <>{slugProp.display}</>
+    } else if (isFunctionalItem(slugProp)) {
+      return slugProp.display(item)
     }
-    return item
+    return <>{slugProp}</>
   }
 
   return (
@@ -139,11 +100,11 @@ const Table: React.FC<TableProps> = ({
           {...{ styles, masterCheck, onMasterCheck, headers, setSortedItems }}
         />
         <tbody>
-          {filteredItems.map((item, index) => (
+          {filteredItems.map((item) => (
             <tr
               className={styles?.tr?.join(' ')}
               onClick={() => {}}
-              key={`item-${index}`}
+              key={`item-${item.id}`}
             >
               <td className={styles?.td?.join(' ')}>
                 <input
@@ -151,16 +112,16 @@ const Table: React.FC<TableProps> = ({
                   onClick={(e) => e.stopPropagation()}
                   type="checkbox"
                   checked={selectedItems.includes(item)}
-                  id={`rowcheck-${index}`}
+                  id={`rowcheck-${item.id}`}
                   onChange={(e) => onItemCheck(e, item)}
                 />
               </td>
-              {headers.map(({ slug }, tindex) => (
+              {headers.map(({ slug }) => (
                 <td
                   className={styles?.td?.join(' ')}
-                  key={`item-${index}-${tindex}`}
+                  key={`${slug}-${item.id}`}
                 >
-                  {inner(item[slug])}
+                  {inner(item[slug], item)}
                 </td>
               ))}
             </tr>
