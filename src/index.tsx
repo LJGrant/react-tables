@@ -19,6 +19,7 @@ export interface TableProps {
   headers: Header[]
   actions?: Action[]
   search?: Boolean
+  getSelected?: ({ ...args }: any) => any
 }
 
 const Table: React.FC<TableProps> = ({
@@ -27,6 +28,7 @@ const Table: React.FC<TableProps> = ({
   headers,
   actions = [],
   search = false,
+  getSelected,
 }) => {
   const [sortedItems, setSortedItems] = useState<Item[]>(items)
   const [filteredItems, setFilteredItems] = useState<Item[]>(items)
@@ -36,6 +38,9 @@ const Table: React.FC<TableProps> = ({
   useEffect(() => {
     if (selectedItems.length === 0) {
       setMasterCheck(false)
+    }
+    if (getSelected) {
+      getSelected(selectedItems)
     }
   }, [selectedItems])
 

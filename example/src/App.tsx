@@ -106,6 +106,10 @@ const App = () => {
     ],
   }
 
+  const getSelected = (items: AppItem): void => {
+    console.log(items)
+  }
+
   return (
     <div className="container">
       <h1>Fun with tables...</h1>
@@ -116,6 +120,7 @@ const App = () => {
           items={items}
           search={true}
           actions={actions}
+          getSelected={getSelected}
         />
       </div>
     </div>
