@@ -14,6 +14,7 @@ const Actions: React.FC<ActionsProps> = ({ actions, selectedItems }) => {
           className={classNames?.join(' ')}
           onClick={() => action(selectedItems)}
           key={`action-${index}`}
+          type="button"
         >
           {label}
         </button>
