@@ -46,6 +46,9 @@ const Table: React.FC<TableProps> = ({
 
   useEffect(() => {
     setSortedItems(items)
+    if (!search) {
+      setFilteredItems(items)
+    }
     setSelectedItems((prevState) => {
       return [
         ...prevState.filter((selectedItem) =>
