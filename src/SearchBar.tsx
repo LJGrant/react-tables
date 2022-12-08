@@ -1,38 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react'
-import TableContext from './context/TableContext'
-import { Header, isBetterItem, Styles } from './lib'
+import React from 'react'
+import useTable from './hooks/useTable'
 
-interface SearchBarProps {
-  styles?: Styles
-  headers: Header[]
-}
-
-const SearchBar: React.FC<SearchBarProps> = ({ styles, headers }) => {
-  const { sortedItems, setFilteredItems } = useContext(TableContext)
-
-  const [searchParam, setSearch] = useState('')
-
-  useEffect(() => {
-    if (searchParam !== '' && setFilteredItems) {
-      const search = searchParam.toLowerCase()
-      const keys = headers
-        .filter((header) => header.searchable !== false)
-        .map(({ slug }) => slug)
-      setFilteredItems(
-        sortedItems.filter((item) =>
-          keys.some((key) => {
-            const itemKey = item[key]
-            if (isBetterItem(itemKey)) {
-              return itemKey.value?.toString().toLowerCase().includes(search)
-            }
-            return itemKey.toString().toLowerCase().includes(search)
-          })
-        )
-      )
-    } else if (setFilteredItems) {
-      setFilteredItems(sortedItems)
-    }
-  }, [searchParam, sortedItems])
+const SearchBar: React.FC = () => {
+  const { styles, searchParam, setSearch } = useTable()
 
   return (
     <div className={styles?.searchInputWrapper?.join(' ')}>

@@ -1,81 +1,86 @@
 import './index.scss'
 
-import React, { useContext, useEffect } from 'react'
-import Actions from './Actions'
+import React, { useEffect } from 'react'
+import Action from './Action'
 import SearchBar from './SearchBar'
 import TableHead from './TableHead'
-import { Item, Styles, Header, Action } from './lib'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import DraggableRow from './RowDraggable'
+import { TableProvidor } from './context/TableContext'
+import useTable from './hooks/useTable'
 import Row from './Row'
-import TableContext from './context/TableContext'
 
-export type TableProps = {
-  styles?: Styles
-  items: Item[]
-  headers: Header[]
-  actions?: Action[]
+export type DragTableProps = {
   search?: Boolean
-  getSelected?: ({ ...args }: any) => any
+  draggable?: Boolean
 }
 
-const Table: React.FC<TableProps> = ({
-  styles,
-  items,
-  headers,
-  actions = [],
-  search = false,
-  getSelected,
-}) => {
-  const { filteredItems, selectedItems, initiateSetup, setMasterCheck } =
-    useContext(TableContext)
+const Table = ({ search = false, draggable = false }: DragTableProps) => {
+  const {
+    selectedItemsById,
+    styles,
+    actions,
+    setMasterCheck,
+    getFilteredItems,
+  } = useTable()
 
   useEffect(() => {
-    if (selectedItems.length === 0 && setMasterCheck) {
-      setMasterCheck(false)
+    if (selectedItemsById.length === 0) {
+      setMasterCheck('unchecked')
     }
-    if (getSelected) {
-      getSelected(selectedItems)
-    }
-  }, [selectedItems])
-
-  useEffect(() => {
-    if (items && initiateSetup) {
-      initiateSetup(items, headers, !!search)
-    }
-  }, [items, headers])
-
+  }, [selectedItemsById])
   return (
     <div className={styles?.tableContainer?.join(' ')}>
       <div className={styles?.searchBar?.join(' ')}>
-        {search && (
-          <SearchBar
-            {...{
-              styles,
-              headers,
-            }}
-          />
-        )}
+        {search && <SearchBar />}
         {actions?.length > 0 && (
           <div className={styles?.buttonWrapper?.join(' ')}>
-            <Actions {...{ actions, selectedItems }} />
+            {actions?.map((action, index) => (
+              <Action {...{ action, index }} />
+            ))}
           </div>
         )}
       </div>
       <table className={styles?.table?.join(' ')}>
-        <TableHead {...{ styles, headers }} />
+        <TableHead />
         <tbody>
-          {filteredItems.map((item) => (
-            <Row
-              key={`item-${item.id}`}
-              {...{
-                item,
-                styles,
-              }}
-            />
-          ))}
+          {getFilteredItems().map(
+            (item, index) =>
+              item &&
+              (draggable ? (
+                <DraggableRow
+                  key={`item-${item.id}`}
+                  {...{
+                    item,
+                    styles,
+                    index,
+                  }}
+                />
+              ) : (
+                <Row
+                  key={`item-${item.id}`}
+                  {...{
+                    item,
+                    styles,
+                    index,
+                  }}
+                />
+              ))
+          )}
         </tbody>
       </table>
     </div>
   )
 }
 
-export default Table
+const App = (props: any) => (
+  <DndProvider backend={HTML5Backend}>
+    <TableProvidor>
+      <Table {...props} />
+    </TableProvidor>
+  </DndProvider>
+)
+
+export default App
+export { Item, BetterItem, FunctionalItem } from './lib'

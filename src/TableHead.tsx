@@ -1,26 +1,22 @@
-import React, { useContext } from 'react'
-import TableContext from './context/TableContext'
-import { Header, Styles } from './lib'
+import React from 'react'
+import useTable from './hooks/useTable'
 
-interface TableHeadProps {
-  styles?: Styles
-  headers: Header[]
-}
+const TableHead: React.FC = () => {
+  const { styles, headers, masterCheck, sortParam, setMasterCheck, sort } =
+    useTable()
 
-const TableHead: React.FC<TableHeadProps> = ({ styles, headers }) => {
-  const { masterCheck, sort, onMasterCheck, sortParam } =
-    useContext(TableContext)
-
-  return sort && sortParam ? (
+  return (
     <thead>
       <tr className={styles?.tr?.join(' ')}>
         <th className={styles?.th?.join(' ')}>
           <input
             className={styles?.checkbox?.join(' ')}
             type="checkbox"
-            checked={!!masterCheck}
+            checked={masterCheck === 'checked'}
             id="mastercheck"
-            onChange={onMasterCheck}
+            onChange={(e) => {
+              setMasterCheck(e.target.checked ? 'checked' : 'unchecked')
+            }}
           />
         </th>
         {headers.map((header, index) => (
@@ -34,7 +30,7 @@ const TableHead: React.FC<TableHeadProps> = ({ styles, headers }) => {
             }}
           >
             {header.label}
-            {sortParam.slug === header.slug && (
+            {sortParam && sortParam.slug === header.slug && (
               <>
                 {sortParam.direction === 'desc' ? (
                   <span className={styles?.indicator?.join(' ')}>&#x25B2;</span>
@@ -51,8 +47,6 @@ const TableHead: React.FC<TableHeadProps> = ({ styles, headers }) => {
         ))}
       </tr>
     </thead>
-  ) : (
-    <></>
   )
 }
 

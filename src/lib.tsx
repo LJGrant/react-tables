@@ -59,3 +59,5 @@ export interface Styles {
   td?: string[]
   indicator?: string[]
 }
+
+export type MasterCheck = 'checked' | 'unchecked' | 'indeterminate'

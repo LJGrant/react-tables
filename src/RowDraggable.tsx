@@ -1,8 +1,8 @@
-import React, { useContext, useRef } from 'react'
-import { Item, Styles } from './lib'
+import React, { useRef } from 'react'
+import { Item } from './lib'
 import type { Identifier, XYCoord } from 'dnd-core'
 import { useDrop, useDrag } from 'react-dnd'
-import TableContext from './context/TableContext'
+import useTable from './hooks/useTable'
 
 interface DragItem {
   index: number
@@ -12,13 +12,11 @@ interface DragItem {
 
 type Props = {
   item: Item
-  styles?: Styles
   index: number
 }
 
-const DraggableRow = ({ item, styles, index }: Props) => {
-  const { headers, selectedItems, onItemCheck, moveRow, inner } =
-    useContext(TableContext)
+const DraggableRow = ({ item, index }: Props) => {
+  const { styles, headers, selectedItemsById, onItemCheck, inner } = useTable()
 
   const ref = useRef<HTMLTableRowElement>(null)
 
@@ -110,14 +108,14 @@ const DraggableRow = ({ item, styles, index }: Props) => {
           className={styles?.checkbox?.join(' ')}
           onClick={(e) => e.stopPropagation()}
           type="checkbox"
-          checked={selectedItems.includes(item)}
+          checked={selectedItemsById.includes(item.id)}
           id={`rowcheck-${item.id}`}
-          onChange={(e) => onItemCheck && onItemCheck(e, item)}
+          onChange={(e) => onItemCheck(e, item)}
         />
       </td>
       {headers.map(({ slug }) => (
         <td className={styles?.td?.join(' ')} key={`${slug}-${item.id}`}>
-          {inner && inner(item[slug], item)}
+          {inner(item[slug], item)}
         </td>
       ))}
     </tr>

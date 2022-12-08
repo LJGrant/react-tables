@@ -1,5 +1,5 @@
-import React, { useContext } from 'react'
-import TableContext from './context/TableContext'
+import React from 'react'
+import useTable from './hooks/useTable'
 import { Item, Styles } from './lib'
 
 type Props = {
@@ -8,8 +8,7 @@ type Props = {
 }
 
 const Row = ({ item, styles }: Props) => {
-  const { headers, selectedItems, onItemCheck, inner } =
-    useContext(TableContext)
+  const { headers, selectedItemsById, onItemCheck, inner } = useTable()
   return (
     <tr className={styles?.tr?.join(' ')} onClick={() => {}}>
       <td className={styles?.td?.join(' ')}>
@@ -17,9 +16,9 @@ const Row = ({ item, styles }: Props) => {
           className={styles?.checkbox?.join(' ')}
           onClick={(e) => e.stopPropagation()}
           type="checkbox"
-          checked={selectedItems.includes(item)}
+          checked={selectedItemsById.includes(item.id)}
           id={`rowcheck-${item.id}`}
-          onChange={(e) => onItemCheck && onItemCheck(e, item)}
+          onChange={(e) => onItemCheck(e, item.id)}
         />
       </td>
       {headers.map(({ slug }) => (
