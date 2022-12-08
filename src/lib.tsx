@@ -35,7 +35,7 @@ export interface Header {
 }
 
 export type Item = {
-  id: string | number | BetterItem | FunctionalItem
+  id: string | number
   [key: string]: string | number | BetterItem | FunctionalItem
 }
 

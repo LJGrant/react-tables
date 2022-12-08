@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import Table, { Item, BetterItem, FunctionalItem } from 'lj-react-tables'
+import React, { useEffect, useState } from 'react'
+import { DragTable, Item, BetterItem, FunctionalItem } from 'lj-react-tables'
 import { v4 as uuidv4 } from 'uuid'
 interface AppItem extends Item {
   id: string
@@ -107,19 +107,30 @@ const App = () => {
   }
 
   const getSelected = (items: AppItem): void => {
+    console.log('--')
+    console.log('selected')
     console.log(items)
+    console.log('--')
   }
+
+  useEffect(() => {
+    console.log('--')
+    console.log('items in example')
+    console.log(items)
+    console.log('--')
+  }, [items])
 
   return (
     <div className="container">
       <h1>Fun with tables...</h1>
       <div className="row">
-        <Table
+        <DragTable
           styles={styles}
           headers={headers}
           items={items}
-          search={true}
           actions={actions}
+          search={true}
+          returnUpdate={setItems}
           getSelected={getSelected}
         />
       </div>

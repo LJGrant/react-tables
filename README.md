@@ -6,11 +6,11 @@ A package for creating table components in React that provide easy customization
 
 Install package with
 
-- `npm install repo/react-tables`
+- `npm install repo/lj-react-tables`
 
 Import component into your react page
 
-- `Import Table from 'react-tables`
+- `Import Table from 'lj-react-tables`
 
 ## Example Use
 

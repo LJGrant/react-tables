@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/uuid": "^8.3.4",
-    "lj-react-tables": "*",
+    "lj-react-tables": "file:..",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "^5.0.1",
