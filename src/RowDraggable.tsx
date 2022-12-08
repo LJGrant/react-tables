@@ -1,16 +1,8 @@
-import React, { useRef } from 'react'
-import { Item, Styles, Header, isBetterItem, isFunctionalItem } from './lib'
+import React, { useContext, useRef } from 'react'
+import { Item, Styles } from './lib'
 import type { Identifier, XYCoord } from 'dnd-core'
 import { useDrop, useDrag } from 'react-dnd'
-
-function inner<T>(slugProp: T, item: Item) {
-  if (isBetterItem(slugProp)) {
-    return <>{slugProp.display}</>
-  } else if (isFunctionalItem(slugProp)) {
-    return slugProp.functionalDisplay(item)
-  }
-  return <>{slugProp}</>
-}
+import TableContext from './context/TableContext'
 
 interface DragItem {
   index: number
@@ -21,22 +13,13 @@ interface DragItem {
 type Props = {
   item: Item
   styles?: Styles
-  selectedItems: Item[]
-  headers: Header[]
   index: number
-  onItemCheck: (e: React.ChangeEvent<HTMLInputElement>, item: Item) => void
-  moveRow: (dragIndex: number, hoverIndex: number) => void
 }
 
-const DraggableRow = ({
-  item,
-  styles,
-  selectedItems,
-  headers,
-  index,
-  onItemCheck,
-  moveRow,
-}: Props) => {
+const DraggableRow = ({ item, styles, index }: Props) => {
+  const { headers, selectedItems, onItemCheck, moveRow, inner } =
+    useContext(TableContext)
+
   const ref = useRef<HTMLTableRowElement>(null)
 
   const [{ handlerId }, drop] = useDrop<
@@ -90,7 +73,7 @@ const DraggableRow = ({
       }
 
       // Time to actually perform the action
-      moveRow(dragIndex, hoverIndex)
+      moveRow && moveRow(dragIndex, hoverIndex)
 
       // Note: we're mutating the monitor item here!
       // Generally it's better to avoid mutations,
@@ -129,12 +112,12 @@ const DraggableRow = ({
           type="checkbox"
           checked={selectedItems.includes(item)}
           id={`rowcheck-${item.id}`}
-          onChange={(e) => onItemCheck(e, item)}
+          onChange={(e) => onItemCheck && onItemCheck(e, item)}
         />
       </td>
       {headers.map(({ slug }) => (
         <td className={styles?.td?.join(' ')} key={`${slug}-${item.id}`}>
-          {inner(item[slug], item)}
+          {inner && inner(item[slug], item)}
         </td>
       ))}
     </tr>

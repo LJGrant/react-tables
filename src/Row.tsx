@@ -1,24 +1,15 @@
-import React from 'react'
-import { Item, Styles, Header, isBetterItem, isFunctionalItem } from './lib'
-function inner<T>(slugProp: T, item: Item) {
-  if (isBetterItem(slugProp)) {
-    return <>{slugProp.display}</>
-  } else if (isFunctionalItem(slugProp)) {
-    return slugProp.functionalDisplay(item)
-  }
-  return <>{slugProp}</>
-}
+import React, { useContext } from 'react'
+import TableContext from './context/TableContext'
+import { Item, Styles } from './lib'
 
 type Props = {
   item: Item
   styles?: Styles
-  selectedItems: Item[]
-  headers: Header[]
-  index: number
-  onItemCheck: (e: React.ChangeEvent<HTMLInputElement>, item: Item) => void
 }
 
-const Row = ({ item, styles, selectedItems, headers, onItemCheck }: Props) => {
+const Row = ({ item, styles }: Props) => {
+  const { headers, selectedItems, onItemCheck, inner } =
+    useContext(TableContext)
   return (
     <tr className={styles?.tr?.join(' ')} onClick={() => {}}>
       <td className={styles?.td?.join(' ')}>
@@ -28,12 +19,12 @@ const Row = ({ item, styles, selectedItems, headers, onItemCheck }: Props) => {
           type="checkbox"
           checked={selectedItems.includes(item)}
           id={`rowcheck-${item.id}`}
-          onChange={(e) => onItemCheck(e, item)}
+          onChange={(e) => onItemCheck && onItemCheck(e, item)}
         />
       </td>
       {headers.map(({ slug }) => (
         <td className={styles?.td?.join(' ')} key={`${slug}-${item.id}`}>
-          {inner(item[slug], item)}
+          {inner && inner(item[slug], item)}
         </td>
       ))}
     </tr>

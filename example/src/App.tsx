@@ -113,6 +113,11 @@ const App = () => {
     console.log('--')
   }
 
+  const returnUpdate = (items: AppItem[]) => {
+    // setItems(items)
+    console.log(items)
+  }
+
   useEffect(() => {
     console.log('--')
     console.log('items in example')
@@ -130,7 +135,7 @@ const App = () => {
           items={items}
           actions={actions}
           search={true}
-          returnUpdate={setItems}
+          returnUpdate={returnUpdate}
           getSelected={getSelected}
         />
       </div>

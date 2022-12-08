@@ -1,83 +1,24 @@
-import React, { useState } from 'react'
-import { Header, isBetterItem, Item, Styles, SortParam } from './lib'
+import React, { useContext } from 'react'
+import TableContext from './context/TableContext'
+import { Header, Styles } from './lib'
 
 interface TableHeadProps {
   styles?: Styles
-  masterCheck: boolean
-  onMasterCheck: () => void
   headers: Header[]
-  setSortedItems: Function
 }
 
-const TableHead: React.FC<TableHeadProps> = ({
-  styles,
-  masterCheck,
-  onMasterCheck,
-  headers,
-  setSortedItems,
-}) => {
-  const [sortParam, setSortParam] = useState<SortParam>({
-    slug: headers[0].slug,
-    direction: '',
-  })
+const TableHead: React.FC<TableHeadProps> = ({ styles, headers }) => {
+  const { masterCheck, sort, onMasterCheck, sortParam } =
+    useContext(TableContext)
 
-  function compare<T>(a: T, b: T, x: number): number {
-    if (isBetterItem(a) && isBetterItem(b)) {
-      if (a.value && b.value) {
-        if (a.value > b.value) return -x
-        if (a.value < b.value) return x
-        return 0
-      } else {
-        return 0
-      }
-    } else {
-      if (a > b) return -x
-      if (a < b) return x
-      return 0
-    }
-  }
-
-  const sort = (slug: string): void => {
-    if (sortParam.slug === slug && sortParam.direction === 'asc') {
-      // sorting by slug but in reverse
-      setSortedItems((prevState: Item[]) => [
-        ...prevState.sort((a, b) => compare(a[slug], b[slug], 1)),
-      ])
-      setSortParam({
-        slug,
-        direction: 'desc',
-      })
-    } else if (sortParam.slug === slug && sortParam.direction === 'desc') {
-      // talking sorting off slug and returning to sorting by init slug
-      setSortedItems((prevState: Item[]) => [
-        ...prevState.sort((a, b) =>
-          compare(a[headers[0].slug], b[headers[0].slug], -1)
-        ),
-      ])
-      setSortParam({
-        slug: 'id',
-        direction: '',
-      })
-    } else {
-      // sorting by slug in ascending order
-      setSortedItems((prevState: Item[]) => [
-        ...prevState.sort((a, b) => compare(a[slug], b[slug], -1)),
-      ])
-      setSortParam({
-        slug,
-        direction: 'asc',
-      })
-    }
-  }
-
-  return (
+  return sort && sortParam ? (
     <thead>
       <tr className={styles?.tr?.join(' ')}>
         <th className={styles?.th?.join(' ')}>
           <input
             className={styles?.checkbox?.join(' ')}
             type="checkbox"
-            checked={masterCheck}
+            checked={!!masterCheck}
             id="mastercheck"
             onChange={onMasterCheck}
           />
@@ -110,6 +51,8 @@ const TableHead: React.FC<TableHeadProps> = ({
         ))}
       </tr>
     </thead>
+  ) : (
+    <></>
   )
 }
 

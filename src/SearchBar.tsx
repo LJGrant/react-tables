@@ -1,23 +1,19 @@
-import React, { useEffect, useState } from 'react'
-import { Header, isBetterItem, Item, Styles } from './lib'
+import React, { useContext, useEffect, useState } from 'react'
+import TableContext from './context/TableContext'
+import { Header, isBetterItem, Styles } from './lib'
 
 interface SearchBarProps {
   styles?: Styles
-  setFilteredItems: Function
-  sortedItems: Item[]
   headers: Header[]
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({
-  styles,
-  setFilteredItems,
-  sortedItems,
-  headers,
-}) => {
+const SearchBar: React.FC<SearchBarProps> = ({ styles, headers }) => {
+  const { sortedItems, setFilteredItems } = useContext(TableContext)
+
   const [searchParam, setSearch] = useState('')
 
   useEffect(() => {
-    if (searchParam !== '') {
+    if (searchParam !== '' && setFilteredItems) {
       const search = searchParam.toLowerCase()
       const keys = headers
         .filter((header) => header.searchable !== false)
@@ -33,7 +29,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           })
         )
       )
-    } else {
+    } else if (setFilteredItems) {
       setFilteredItems(sortedItems)
     }
   }, [searchParam, sortedItems])

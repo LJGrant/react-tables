@@ -40,7 +40,7 @@ export type Item = {
 }
 
 export interface SortParam {
-  slug: string
+  slug: string | null
   direction: string
 }
 

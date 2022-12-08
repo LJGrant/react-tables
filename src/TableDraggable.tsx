@@ -5,28 +5,37 @@ import Actions from './Actions'
 import SearchBar from './SearchBar'
 import TableHead from './TableHead'
 import { Item, Styles, Header, Action } from './lib'
-import Row from './Row'
-import TableContext from './context/TableContext'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import DraggableRow from './RowDraggable'
+import TableContext, { TableProvidor } from './context/TableContext'
 
-export type TableProps = {
+export type DragTableProps = {
   styles?: Styles
   items: Item[]
   headers: Header[]
   actions?: Action[]
   search?: Boolean
+  returnUpdate: (sortedItems: Item[]) => void
   getSelected?: ({ ...args }: any) => any
 }
 
-const Table: React.FC<TableProps> = ({
+const Table = ({
   styles,
   items,
   headers,
   actions = [],
   search = false,
+  returnUpdate,
   getSelected,
-}) => {
-  const { filteredItems, selectedItems, initiateSetup, setMasterCheck } =
-    useContext(TableContext)
+}: DragTableProps) => {
+  const {
+    sortedItems,
+    filteredItems,
+    selectedItems,
+    initiateSetup,
+    setMasterCheck,
+  } = useContext(TableContext)
 
   useEffect(() => {
     if (selectedItems.length === 0 && setMasterCheck) {
@@ -42,6 +51,11 @@ const Table: React.FC<TableProps> = ({
       initiateSetup(items, headers, !!search)
     }
   }, [items, headers])
+
+  useEffect(() => {
+    returnUpdate(sortedItems)
+    console.log('updated')
+  }, [sortedItems])
 
   return (
     <div className={styles?.tableContainer?.join(' ')}>
@@ -63,12 +77,13 @@ const Table: React.FC<TableProps> = ({
       <table className={styles?.table?.join(' ')}>
         <TableHead {...{ styles, headers }} />
         <tbody>
-          {filteredItems.map((item) => (
-            <Row
+          {filteredItems.map((item, index) => (
+            <DraggableRow
               key={`item-${item.id}`}
               {...{
                 item,
                 styles,
+                index,
               }}
             />
           ))}
@@ -78,4 +93,13 @@ const Table: React.FC<TableProps> = ({
   )
 }
 
-export default Table
+const DragTable = (props: any) => (
+  <DndProvider backend={HTML5Backend}>
+    <TableProvidor>
+      <Table {...props} />
+    </TableProvidor>
+  </DndProvider>
+)
+
+export default DragTable
+export { Item, BetterItem, FunctionalItem } from './lib'
