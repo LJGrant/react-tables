@@ -16,7 +16,8 @@ type Props = {
 }
 
 const DraggableRow = ({ item, index }: Props) => {
-  const { styles, headers, selectedItemsById, onItemCheck, inner } = useTable()
+  const { styles, headers, selectedItemsById, onItemCheck, inner, moveRow } =
+    useTable()
 
   const ref = useRef<HTMLTableRowElement>(null)
 
@@ -71,7 +72,7 @@ const DraggableRow = ({ item, index }: Props) => {
       }
 
       // Time to actually perform the action
-      moveRow && moveRow(dragIndex, hoverIndex)
+      moveRow(dragIndex, hoverIndex)
 
       // Note: we're mutating the monitor item here!
       // Generally it's better to avoid mutations,
@@ -110,7 +111,7 @@ const DraggableRow = ({ item, index }: Props) => {
           type="checkbox"
           checked={selectedItemsById.includes(item.id)}
           id={`rowcheck-${item.id}`}
-          onChange={(e) => onItemCheck(e, item)}
+          onChange={(e) => onItemCheck(e, item.id)}
         />
       </td>
       {headers.map(({ slug }) => (

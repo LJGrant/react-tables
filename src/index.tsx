@@ -1,3 +1,2 @@
-export { default, TableProps } from './Table'
-export { default as DragTable, DragTableProps } from './TableDraggable'
+export { default } from './Table'
 export { Item, BetterItem, FunctionalItem } from './lib'

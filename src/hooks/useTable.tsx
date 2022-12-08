@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useCallback, useContext, useEffect } from 'react'
 import TableContext from '../context/TableContext'
 import {
   Action,
@@ -9,6 +9,7 @@ import {
   MasterCheck,
   Styles,
 } from '../lib'
+import update from 'immutability-helper'
 
 const useTable = () => {
   const { state, setState } = useContext(TableContext)
@@ -253,6 +254,25 @@ const useTable = () => {
     return <>{slugProp}</>
   }
 
+  const moveRow = useCallback((dragIndex: number, hoverIndex: number) => {
+    setState((prev) => {
+      return {
+        ...prev,
+
+        sortParam: {
+          slug: null,
+          direction: '',
+        },
+        sortedItemsById: update(prev.sortedItemsById, {
+          $splice: [
+            [dragIndex, 1],
+            [hoverIndex, 0, prev.sortedItemsById[dragIndex]],
+          ],
+        }),
+      }
+    })
+  }, [])
+
   return {
     ...state,
     setItems,
@@ -269,6 +289,7 @@ const useTable = () => {
     getFilteredItems,
     sort,
     inner,
+    moveRow,
   }
 }
 
