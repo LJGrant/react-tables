@@ -1,5 +1,5 @@
-import React, { useCallback, useContext, useEffect } from 'react'
-import TableContext from '../context/TableContext'
+import React, { useCallback, useContext } from 'react'
+import { TableContext } from '../context/TableContext'
 import {
   Action,
   Header,
@@ -13,51 +13,37 @@ import update from 'immutability-helper'
 
 const useTable = () => {
   const { state, setState } = useContext(TableContext)
-  const {
-    items,
-    sortedItemsById,
-    filteredItemsById,
-    selectedItemsById,
-    headers,
-    sortParam,
-    searchParam,
-  } = state
+  const { items, filteredItemsById, selectedItemsById, headers, sortParam } =
+    state
 
-  if (setState === undefined) {
+  if (setState === undefined || state === undefined) {
     throw new Error('setState is not defined')
   }
-
-  useEffect(() => {
-    if (searchParam && searchParam !== '') {
-      const search = searchParam.toLowerCase()
-      const keys = headers
-        .filter((header) => header.searchable !== false)
-        .map(({ slug }) => slug)
-      const filteredItemsById = getSortedItems()
-        .filter((item) =>
-          keys.some((key) => {
-            const itemKey = item[key]
-            if (isBetterItem(itemKey)) {
-              return itemKey.value?.toString().toLowerCase().includes(search)
-            }
-            return itemKey.toString().toLowerCase().includes(search)
-          })
-        )
-        .map((item) => item.id)
-      setState((prev) => {
-        return {
-          ...prev,
-          filteredItemsById,
-        }
-      })
-    }
-  }, [searchParam])
 
   const setItems = (items: Item[]) => {
     setState((prev) => {
       return {
         ...prev,
         items,
+        sortedItemsById: items.map((item) => item.id),
+      }
+    })
+  }
+
+  const addItems = (items: Item[]) => {
+    setState((prev) => {
+      return { ...prev, items: [...prev.items, ...items] }
+    })
+  }
+
+  const removeItems = (ids: (number | string)[]) => {
+    setState((prev) => {
+      return {
+        ...prev,
+        items: [...prev.items.filter((item) => !ids.includes(item.id))],
+        selectedItemsById: [
+          ...prev.selectedItemsById.filter((id) => !ids.includes(id)),
+        ],
       }
     })
   }
@@ -99,12 +85,23 @@ const useTable = () => {
   }
 
   const setMasterCheck = (checkStatus: MasterCheck) => {
-    setState((prev) => {
-      return {
-        ...prev,
-        masterCheck: checkStatus,
-      }
-    })
+    if (checkStatus === 'checked') {
+      setState((prev) => {
+        return {
+          ...prev,
+          masterCheck: checkStatus,
+          selectedItemsById: items.map((item) => item.id),
+        }
+      })
+    } else if (checkStatus === 'unchecked') {
+      setState((prev) => {
+        return {
+          ...prev,
+          masterCheck: checkStatus,
+          selectedItemsById: [],
+        }
+      })
+    }
   }
 
   const onItemCheck = (
@@ -117,11 +114,11 @@ const useTable = () => {
     } else {
       newIds = selectedItemsById.filter((selectedId) => selectedId !== id)
     }
-    let masterCheck = 'indeterminite' as MasterCheck
+    let masterCheck = 'indeterminate' as MasterCheck
     if (newIds.length === 0) {
       masterCheck = 'unchecked'
     } else if (newIds.length === items.length) {
-      masterCheck = 'indeterminate'
+      masterCheck = 'checked'
     }
 
     setState((prev) => {
@@ -131,6 +128,10 @@ const useTable = () => {
         masterCheck,
       }
     })
+  }
+
+  const getItems = () => {
+    return items
   }
 
   const getItemById = (id: number | string) => {
@@ -149,16 +150,6 @@ const useTable = () => {
 
   const getSelectedItems = () => {
     return selectedItemsById.reduce((result, id) => {
-      const item = items.find((item) => id === item.id)
-      if (item) {
-        return [...result, item]
-      }
-      return result
-    }, [] as Item[])
-  }
-
-  const getSortedItems = () => {
-    return sortedItemsById.reduce((result, id) => {
       const item = items.find((item) => id === item.id)
       if (item) {
         return [...result, item]
@@ -203,9 +194,9 @@ const useTable = () => {
             slug,
             direction: 'desc',
           },
-          sortedItemsById: items
+          items: items
             .sort((a, b) => compare(a[slug], b[slug], 1))
-            .map((item) => item.id),
+            .map((item) => item),
         }
       })
     } else if (
@@ -222,9 +213,9 @@ const useTable = () => {
             slug: 'id',
             direction: '',
           },
-          sortedItemsById: items
+          items: items
             .sort((a, b) => compare(a[headers[0].slug], b[headers[0].slug], -1))
-            .map((item) => item.id),
+            .map((item) => item),
         }
       })
     } else {
@@ -237,9 +228,9 @@ const useTable = () => {
             slug,
             direction: 'asc',
           },
-          sortedItemsById: items
+          items: items
             .sort((a, b) => compare(a[slug], b[slug], -1))
-            .map((item) => item.id),
+            .map((item) => item),
         }
       })
     }
@@ -263,10 +254,10 @@ const useTable = () => {
           slug: null,
           direction: '',
         },
-        sortedItemsById: update(prev.sortedItemsById, {
+        items: update(prev.items, {
           $splice: [
             [dragIndex, 1],
-            [hoverIndex, 0, prev.sortedItemsById[dragIndex]],
+            [hoverIndex, 0, prev.items[dragIndex]],
           ],
         }),
       }
@@ -276,6 +267,9 @@ const useTable = () => {
   return {
     ...state,
     setItems,
+    removeItems,
+    addItems,
+    getItems,
     getItemById,
     getItemsById,
     setSearch,
@@ -285,7 +279,6 @@ const useTable = () => {
     setActions,
     setStyles,
     getSelectedItems,
-    getSortedItems,
     getFilteredItems,
     sort,
     inner,

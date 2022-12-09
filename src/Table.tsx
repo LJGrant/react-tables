@@ -1,13 +1,12 @@
 import './index.scss'
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import Action from './Action'
 import SearchBar from './SearchBar'
 import TableHead from './TableHead'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 import DraggableRow from './RowDraggable'
-import { TableProvidor } from './context/TableContext'
 import useTable from './hooks/useTable'
 import Row from './Row'
 
@@ -19,6 +18,7 @@ export type DragTableProps = {
 const Table = ({ search = false, draggable = false }: DragTableProps) => {
   const {
     selectedItemsById,
+    filteredItemsById,
     styles,
     actions,
     setMasterCheck,
@@ -29,7 +29,12 @@ const Table = ({ search = false, draggable = false }: DragTableProps) => {
     if (selectedItemsById.length === 0) {
       setMasterCheck('unchecked')
     }
-  }, [selectedItemsById])
+  }, [])
+
+  const filteredItems = useMemo(() => {
+    return getFilteredItems()
+  }, [filteredItemsById])
+
   return (
     <div className={styles?.tableContainer?.join(' ')}>
       <div className={styles?.searchBar?.join(' ')}>
@@ -37,7 +42,7 @@ const Table = ({ search = false, draggable = false }: DragTableProps) => {
         {actions?.length > 0 && (
           <div className={styles?.buttonWrapper?.join(' ')}>
             {actions?.map((action, index) => (
-              <Action {...{ action, index }} />
+              <Action key={`action-${index}`} {...{ action, index }} />
             ))}
           </div>
         )}
@@ -45,7 +50,7 @@ const Table = ({ search = false, draggable = false }: DragTableProps) => {
       <table className={styles?.table?.join(' ')}>
         <TableHead />
         <tbody>
-          {getFilteredItems().map(
+          {filteredItems.map(
             (item, index) =>
               item &&
               (draggable ? (
@@ -76,9 +81,7 @@ const Table = ({ search = false, draggable = false }: DragTableProps) => {
 
 const App = (props: any) => (
   <DndProvider backend={HTML5Backend}>
-    <TableProvidor>
-      <Table {...props} />
-    </TableProvidor>
+    <Table {...props} />
   </DndProvider>
 )
 

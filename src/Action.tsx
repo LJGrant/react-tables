@@ -12,15 +12,11 @@ const Action: React.FC<ActionProps> = ({ action, index }) => {
 
   const { classNames, label, action: func } = action
 
-  const buttonAction = () => {
-    func(getSelectedItems())
-  }
-
   return (
     <>
       <button
         className={classNames?.join(' ')}
-        onClick={buttonAction}
+        onClick={() => func(getSelectedItems())}
         key={`action-${index}`}
         type="button"
       >

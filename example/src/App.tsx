@@ -1,15 +1,73 @@
-import React, { useEffect, useState } from 'react'
-import { DragTable, Item, BetterItem, FunctionalItem } from 'lj-react-tables'
+import React, { useCallback, useEffect } from 'react'
+import Table, {
+  useTable,
+  Item,
+  BetterItem,
+  FunctionalItem,
+} from 'lj-react-tables'
 import { v4 as uuidv4 } from 'uuid'
 interface AppItem extends Item {
-  id: string
+  id: string | number
   label: BetterItem
   foo: string
   bar: string
   edit: FunctionalItem
 }
 
+const headers = [
+  {
+    label: 'Id',
+    slug: 'id',
+  },
+  {
+    label: 'Label',
+    slug: 'label',
+  },
+  {
+    label: 'Foo',
+    slug: 'foo',
+    sortable: false,
+  },
+  {
+    label: 'Barington',
+    slug: 'bar',
+    searchable: false,
+  },
+  {
+    label: 'Edit',
+    slug: 'edit',
+    searchable: false,
+    sortable: false,
+  },
+]
+
+const styles = {
+  tableContainer: ['container'],
+  searchBar: ['manage-head', 'row'],
+  searchInputWrapper: ['col-auto'],
+  buttonWrapper: ['col-auto'],
+  searchInput: ['form-control'],
+  table: [
+    'table',
+    'table-sm',
+    'table-striped',
+    'table-bordered',
+    'table-hover',
+  ],
+}
+
 const App = () => {
+  const {
+    items,
+    getItems,
+    setItems,
+    setActions,
+    setHeaders,
+    setStyles,
+    removeItems,
+    addItems,
+  } = useTable()
+
   const displayItem = (item: AppItem): React.ReactNode => (
     <button onClick={() => alert(item.label.value)}>{item.bar} Me</button>
   )
@@ -38,44 +96,15 @@ const App = () => {
     return leItems
   }
 
-  const [items, setItems] = useState<AppItem[]>(makeItems(8))
-
-  const headers = [
-    {
-      label: 'Id',
-      slug: 'id',
+  const deleteItems = useCallback(
+    (deleteItems: AppItem[]): void => {
+      removeItems(deleteItems.map((item) => item.id))
     },
-    {
-      label: 'Label',
-      slug: 'label',
-    },
-    {
-      label: 'Foo',
-      slug: 'foo',
-      sortable: false,
-    },
-    {
-      label: 'Barington',
-      slug: 'bar',
-      searchable: false,
-    },
-    {
-      label: 'Edit',
-      slug: 'edit',
-      searchable: false,
-      sortable: false,
-    },
-  ]
-
-  const deleteItems = (items: AppItem[]): void => {
-    const ids = items.map((item) => item.id)
-    setItems((prevState) => [
-      ...prevState.filter((item) => !ids.includes(item.id)),
-    ])
-  }
+    [items]
+  )
 
   const addItem = (): void => {
-    setItems((prevState) => [...prevState, ...makeItems(1)])
+    addItems(makeItems(1))
   }
 
   const actions = [
@@ -91,53 +120,24 @@ const App = () => {
     },
   ]
 
-  const styles = {
-    tableContainer: ['container'],
-    searchBar: ['manage-head', 'row'],
-    searchInputWrapper: ['col-auto'],
-    buttonWrapper: ['col-auto'],
-    searchInput: ['form-control'],
-    table: [
-      'table',
-      'table-sm',
-      'table-striped',
-      'table-bordered',
-      'table-hover',
-    ],
-  }
-
-  const getSelected = (items: AppItem): void => {
-    console.log('--')
-    console.log('selected')
-    console.log(items)
-    console.log('--')
-  }
-
-  const returnUpdate = (items: AppItem[]) => {
-    // setItems(items)
+  const clgItems = () => {
+    console.log(getItems())
     console.log(items)
   }
 
   useEffect(() => {
-    console.log('--')
-    console.log('items in example')
-    console.log(items)
-    console.log('--')
-  }, [items])
+    setItems(makeItems(8))
+    setActions(actions)
+    setHeaders(headers)
+    setStyles(styles)
+  }, [])
 
   return (
     <div className="container">
       <h1>Fun with tables...</h1>
+      <button onClick={clgItems}>Click Me</button>
       <div className="row">
-        <DragTable
-          styles={styles}
-          headers={headers}
-          items={items}
-          actions={actions}
-          search={true}
-          returnUpdate={returnUpdate}
-          getSelected={getSelected}
-        />
+        <Table search={true} draggable={true} />
       </div>
     </div>
   )
