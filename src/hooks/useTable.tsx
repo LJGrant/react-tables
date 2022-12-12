@@ -183,6 +183,14 @@ const useTable = (id: number | string) => {
       return result
     }, [] as Item[])
   }
+  const setSelectedItems = (ids: (number | string)[]) => {
+    setState((prev) => {
+      return {
+        ...prev,
+        selectedItemsById: ids,
+      }
+    })
+  }
 
   const getFilteredItems = () => {
     return filteredItemsById.reduce((result, id) => {
@@ -303,6 +311,7 @@ const useTable = (id: number | string) => {
     setActions,
     setStyles,
     getSelectedItems,
+    setSelectedItems,
     getFilteredItems,
     sort,
     inner,

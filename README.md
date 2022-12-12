@@ -195,7 +195,7 @@ export default App
 These hooks provide access to the table state and functions to set up properties of the table including the items, headers, styles, and action buttons.
 
 - setItems: sets items to show in the table
-- removeItems: removes row items
+- removeItems: removes specified row items
 - addItems: adds row items without removing existing rows
 - getItems: returns an array of existing array items
 - getItemById: returns a specific item by it's id
