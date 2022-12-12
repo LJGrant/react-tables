@@ -3,12 +3,13 @@ import useTable from './hooks/useTable'
 import { Item, Styles } from './lib'
 
 type Props = {
+  id: number | string
   item: Item
   styles?: Styles
 }
 
-const Row = ({ item, styles }: Props) => {
-  const { headers, selectedItemsById, onItemCheck, inner } = useTable()
+const Row = ({ id, item, styles }: Props) => {
+  const { headers, selectedItemsById, onItemCheck, inner } = useTable(id)
   return (
     <tr className={styles?.tr?.join(' ')} onClick={() => {}}>
       <td className={styles?.td?.join(' ')}>

@@ -3,12 +3,13 @@ import useTable from './hooks/useTable'
 import { Action } from './lib'
 
 type ActionProps = {
+  id: number | string
   action: Action
   index: number
 }
 
-const Action: React.FC<ActionProps> = ({ action, index }) => {
-  const { getSelectedItems } = useTable()
+const Action = ({ id, action, index }: ActionProps) => {
+  const { getSelectedItems } = useTable(id)
 
   const { classNames, label, action: func } = action
 

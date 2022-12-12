@@ -1,110 +1,45 @@
-import React, { createContext, useEffect, useState } from 'react'
-import {
-  Action,
-  Header,
-  isBetterItem,
-  Item,
-  MasterCheck,
-  SortParam,
-  Styles,
-} from '../lib'
-
-type TableState = {
-  items: Item[]
-  filteredItemsById: (number | string)[]
-  selectedItemsById: (number | string)[]
-  headers: Header[]
-  masterCheck: MasterCheck
-  searchParam: string
-  sortParam?: SortParam
-  actions: Action[]
-  styles?: Styles
-}
+import React, { createContext, useState } from 'react'
+import { Table, TableState } from '../lib'
 
 type TableContextInterface = {
-  state: TableState
-  setState?: React.Dispatch<React.SetStateAction<TableState>>
+  tables: Table[]
+  setTables?: React.Dispatch<React.SetStateAction<Table[]>>
+  setTableState?: (
+    id: number | string,
+    initialState: (tableState: TableState) => TableState
+  ) => void
 }
 
 const TableContext = createContext<TableContextInterface>({
-  state: {
-    items: [],
-    filteredItemsById: [],
-    selectedItemsById: [],
-    headers: [],
-    masterCheck: 'unchecked',
-    actions: [],
-    searchParam: '',
-  },
+  tables: [],
 })
 
 const TableProvidor = ({ children }: { children: React.ReactNode }) => {
-  const [state, setState] = useState<TableState>({
-    items: [],
-    filteredItemsById: [],
-    selectedItemsById: [],
-    headers: [],
-    masterCheck: 'unchecked',
-    searchParam: '',
-    sortParam: {
-      slug: null,
-      direction: '',
-    },
-    actions: [],
-  })
+  const [tables, setTables] = useState<Table[]>([])
 
-  useEffect(() => {
-    if (state.searchParam !== '') {
-      const search = state.searchParam.toLowerCase()
-      const keys = state.headers
-        .filter((header) => header.searchable !== false)
-        .map(({ slug }) => slug)
-      const filteredItemsById = state.items
-        .reduce((result, { id }) => {
-          const item = state.items.find((item) => id === item.id)
-          if (item) {
-            return [...result, item]
-          }
-          return result
-        }, [] as Item[])
-        .filter((item) =>
-          keys.some((key) => {
-            const itemKey = item[key]
-            if (isBetterItem(itemKey)) {
-              return itemKey.value?.toString().toLowerCase().includes(search)
-            }
-            return itemKey.toString().toLowerCase().includes(search)
-          })
-        )
-        .map((item) => item.id)
-
-      setState((prev) => {
-        return {
-          ...prev,
-          filteredItemsById,
+  const setTableState = (
+    id: number | string,
+    mutation: (tableState: TableState) => TableState
+  ) => {
+    if (setTables) {
+      setTables((prev) => {
+        const table = prev.find((t) => t.id === id)
+        if (!table) {
+          return prev
         }
-      })
-    } else {
-      let masterCheck = state.masterCheck
-      if (state.selectedItemsById.length === 0) {
-        masterCheck = 'unchecked'
-      } else if (state.selectedItemsById.length === state.items.length) {
-        masterCheck = 'checked'
-      } else {
-        masterCheck = 'indeterminate'
-      }
-      setState((prev) => {
-        return {
-          ...prev,
-          filteredItemsById: state.items.map((item) => item.id),
-          masterCheck,
-        }
+        return [
+          ...prev.filter((t) => t.id != table.id),
+          {
+            ...table,
+            state: mutation(table.state),
+          },
+        ]
       })
     }
-  }, [state.items, state.searchParam])
+  }
 
   return (
-    <TableContext.Provider value={{ state, setState }}>
+    <TableContext.Provider value={{ tables, setTables, setTableState }}>
       {children}
     </TableContext.Provider>
   )

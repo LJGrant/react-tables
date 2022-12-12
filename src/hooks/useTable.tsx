@@ -8,16 +8,43 @@ import {
   Item,
   MasterCheck,
   Styles,
+  TableState,
 } from '../lib'
 import update from 'immutability-helper'
 
-const useTable = () => {
-  const { state, setState } = useContext(TableContext)
+const initState = {
+  state: {
+    items: [] as Item[],
+    filteredItemsById: [] as (number | string)[],
+    selectedItemsById: [] as (number | string)[],
+    headers: [] as Header[],
+    masterCheck: 'unchecked' as MasterCheck,
+    searchParam: '',
+    sortParam: {
+      slug: null,
+      direction: '',
+    },
+    actions: [] as Action[],
+    styles: [] as Styles,
+  },
+}
+
+const useTable = (id: number | string) => {
+  const { tables, setTableState } = useContext(TableContext)
+
+  if (!tables || !setTableState) {
+    throw new Error('Context has not been initiated')
+  }
+
+  const table = tables.find((table) => table.id === id)
+
+  const { state } = table ?? initState
+
   const { items, filteredItemsById, selectedItemsById, headers, sortParam } =
     state
 
-  if (setState === undefined || state === undefined) {
-    throw new Error('setState is not defined')
+  const setState = (mutation: (tableState: TableState) => TableState) => {
+    setTableState(id, mutation)
   }
 
   const setItems = (items: Item[]) => {
@@ -120,7 +147,6 @@ const useTable = () => {
     } else if (newIds.length === items.length) {
       masterCheck = 'checked'
     }
-
     setState((prev) => {
       return {
         ...prev,
@@ -205,7 +231,6 @@ const useTable = () => {
       sortParam.direction === 'desc'
     ) {
       // talking sorting off slug and returning to sorting by init slug
-
       setState((prev) => {
         return {
           ...prev,
@@ -220,7 +245,6 @@ const useTable = () => {
       })
     } else {
       // sorting by slug in ascending order
-
       setState((prev) => {
         return {
           ...prev,

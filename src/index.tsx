@@ -1,4 +1,5 @@
 export { default } from './Table'
 export { Item, BetterItem, FunctionalItem } from './lib'
 export { default as useTable } from './hooks/useTable'
+export { default as useCreateTable } from './hooks/useCreateTable'
 export { TableProvidor } from './context/TableContext'

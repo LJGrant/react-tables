@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react'
 import useTable from './hooks/useTable'
 
-const TableHead: React.FC = () => {
+const TableHead = ({ id }: { id: number | string }) => {
   const { styles, headers, masterCheck, sortParam, setMasterCheck, sort } =
-    useTable()
+    useTable(id)
 
   const checkboxRef = useRef<HTMLInputElement>(null)
 

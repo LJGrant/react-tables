@@ -1,8 +1,8 @@
 import React from 'react'
 import useTable from './hooks/useTable'
 
-const SearchBar: React.FC = () => {
-  const { styles, searchParam, setSearch } = useTable()
+const SearchBar = ({ id }: { id: number | string }) => {
+  const { styles, searchParam, setSearch } = useTable(id)
 
   return (
     <div className={styles?.searchInputWrapper?.join(' ')}>

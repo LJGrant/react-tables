@@ -17,10 +17,6 @@ interface AppItem extends Item {
 
 const headers = [
   {
-    label: 'Id',
-    slug: 'id',
-  },
-  {
     label: 'Label',
     slug: 'label',
   },
@@ -57,17 +53,17 @@ const styles = {
   ],
 }
 
-const App = () => {
+const Example2 = () => {
   const {
     items,
+    getItems,
     setItems,
     setActions,
     setHeaders,
     setStyles,
     removeItems,
     addItems,
-    destroyTable,
-  } = useCreateTable('one')
+  } = useCreateTable('two')
 
   const displayItem = (item: AppItem): React.ReactNode => (
     <button onClick={() => alert(item.label.value)}>{item.bar} Me</button>
@@ -122,6 +118,7 @@ const App = () => {
   ]
 
   const clgItems = () => {
+    console.log(getItems())
     console.log(items)
   }
 
@@ -130,10 +127,6 @@ const App = () => {
     setActions(actions)
     setHeaders(headers)
     setStyles(styles)
-
-    return function cleanUp() {
-      destroyTable()
-    }
   }, [])
 
   return (
@@ -141,14 +134,10 @@ const App = () => {
       <h1>Fun with tables...</h1>
       <button onClick={clgItems}>Click Me</button>
       <div className="row">
-        <Table
-          id={'one'}
-          // search={true}
-          // draggable={true}
-        />
+        <Table id={'two'} search={true} draggable={true} />
       </div>
     </div>
   )
 }
 
-export default App
+export default Example2

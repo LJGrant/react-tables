@@ -11,11 +11,12 @@ import useTable from './hooks/useTable'
 import Row from './Row'
 
 export type DragTableProps = {
+  id: number | string
   search?: Boolean
   draggable?: Boolean
 }
 
-const Table = ({ search = false, draggable = false }: DragTableProps) => {
+const Table = ({ id, search = false, draggable = false }: DragTableProps) => {
   const {
     selectedItemsById,
     filteredItemsById,
@@ -23,7 +24,7 @@ const Table = ({ search = false, draggable = false }: DragTableProps) => {
     actions,
     setMasterCheck,
     getFilteredItems,
-  } = useTable()
+  } = useTable(id)
 
   useEffect(() => {
     if (selectedItemsById.length === 0) {
@@ -38,23 +39,24 @@ const Table = ({ search = false, draggable = false }: DragTableProps) => {
   return (
     <div className={styles?.tableContainer?.join(' ')}>
       <div className={styles?.searchBar?.join(' ')}>
-        {search && <SearchBar />}
+        {search && <SearchBar id={id} />}
         {actions?.length > 0 && (
           <div className={styles?.buttonWrapper?.join(' ')}>
             {actions?.map((action, index) => (
-              <Action key={`action-${index}`} {...{ action, index }} />
+              <Action key={`action-${index}`} {...{ action, index }} id={id} />
             ))}
           </div>
         )}
       </div>
       <table className={styles?.table?.join(' ')}>
-        <TableHead />
+        <TableHead id={id} />
         <tbody>
           {filteredItems.map(
             (item, index) =>
               item &&
               (draggable ? (
                 <DraggableRow
+                  id={id}
                   key={`item-${item.id}`}
                   {...{
                     item,
@@ -64,6 +66,7 @@ const Table = ({ search = false, draggable = false }: DragTableProps) => {
                 />
               ) : (
                 <Row
+                  id={id}
                   key={`item-${item.id}`}
                   {...{
                     item,
@@ -79,11 +82,11 @@ const Table = ({ search = false, draggable = false }: DragTableProps) => {
   )
 }
 
-const App = (props: any) => (
+const TableApp = (props: any) => (
   <DndProvider backend={HTML5Backend}>
     <Table {...props} />
   </DndProvider>
 )
 
-export default App
+export default TableApp
 export { Item, BetterItem, FunctionalItem } from './lib'

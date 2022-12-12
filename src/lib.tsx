@@ -61,3 +61,20 @@ export interface Styles {
 }
 
 export type MasterCheck = 'checked' | 'unchecked' | 'indeterminate'
+
+export type TableState = {
+  items: Item[]
+  filteredItemsById: (number | string)[]
+  selectedItemsById: (number | string)[]
+  headers: Header[]
+  masterCheck: MasterCheck
+  searchParam: string
+  sortParam?: SortParam
+  actions: Action[]
+  styles?: Styles
+}
+
+export type Table = {
+  id: string | number
+  state: TableState
+}

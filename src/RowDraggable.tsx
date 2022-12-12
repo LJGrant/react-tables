@@ -11,13 +11,14 @@ interface DragItem {
 }
 
 type Props = {
+  id: number | string
   item: Item
   index: number
 }
 
-const DraggableRow = ({ item, index }: Props) => {
+const DraggableRow = ({ id, item, index }: Props) => {
   const { styles, headers, selectedItemsById, onItemCheck, inner, moveRow } =
-    useTable()
+    useTable(id)
 
   const ref = useRef<HTMLTableRowElement>(null)
 
