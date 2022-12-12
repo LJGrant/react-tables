@@ -1,85 +1,41 @@
-import React, { useState } from 'react'
-import { Header, isBetterItem, Item, Styles, SortParam } from './lib'
+import React, { useEffect, useRef } from 'react'
+import useTable from './hooks/useTable'
 
-interface TableHeadProps {
-  styles?: Styles
-  masterCheck: boolean
-  onMasterCheck: () => void
-  headers: Header[]
-  setSortedItems: Function
-}
+const TableHead = ({ id }: { id: number | string }) => {
+  const { styles, headers, masterCheck, sortParam, setMasterCheck, sort } =
+    useTable(id)
 
-const TableHead: React.FC<TableHeadProps> = ({
-  styles,
-  masterCheck,
-  onMasterCheck,
-  headers,
-  setSortedItems,
-}) => {
-  const [sortParam, setSortParam] = useState<SortParam>({
-    slug: headers[0].slug,
-    direction: '',
-  })
+  const checkboxRef = useRef<HTMLInputElement>(null)
 
-  function compare<T>(a: T, b: T, x: number): number {
-    if (isBetterItem(a) && isBetterItem(b)) {
-      if (a.value && b.value) {
-        if (a.value > b.value) return -x
-        if (a.value < b.value) return x
-        return 0
+  useEffect(() => {
+    if (checkboxRef.current) {
+      if (masterCheck === 'indeterminate') {
+        checkboxRef.current.indeterminate = true
+        checkboxRef.current.checked = false
+      } else if (masterCheck === 'checked') {
+        checkboxRef.current.indeterminate = false
+        checkboxRef.current.checked = true
       } else {
-        return 0
+        checkboxRef.current.indeterminate = false
+        checkboxRef.current.checked = false
       }
-    } else {
-      if (a > b) return -x
-      if (a < b) return x
-      return 0
     }
-  }
-
-  const sort = (slug: string): void => {
-    if (sortParam.slug === slug && sortParam.direction === 'asc') {
-      // sorting by slug but in reverse
-      setSortedItems((prevState: Item[]) => [
-        ...prevState.sort((a, b) => compare(a[slug], b[slug], 1)),
-      ])
-      setSortParam({
-        slug,
-        direction: 'desc',
-      })
-    } else if (sortParam.slug === slug && sortParam.direction === 'desc') {
-      // talking sorting off slug and returning to sorting by init slug
-      setSortedItems((prevState: Item[]) => [
-        ...prevState.sort((a, b) =>
-          compare(a[headers[0].slug], b[headers[0].slug], -1)
-        ),
-      ])
-      setSortParam({
-        slug: 'id',
-        direction: '',
-      })
-    } else {
-      // sorting by slug in ascending order
-      setSortedItems((prevState: Item[]) => [
-        ...prevState.sort((a, b) => compare(a[slug], b[slug], -1)),
-      ])
-      setSortParam({
-        slug,
-        direction: 'asc',
-      })
-    }
-  }
+  }, [masterCheck])
 
   return (
     <thead>
       <tr className={styles?.tr?.join(' ')}>
         <th className={styles?.th?.join(' ')}>
           <input
+            ref={checkboxRef}
             className={styles?.checkbox?.join(' ')}
             type="checkbox"
-            checked={masterCheck}
             id="mastercheck"
-            onChange={onMasterCheck}
+            onChange={() => {
+              setMasterCheck(
+                masterCheck === 'unchecked' ? 'checked' : 'unchecked'
+              )
+            }}
           />
         </th>
         {headers.map((header, index) => (
@@ -93,7 +49,7 @@ const TableHead: React.FC<TableHeadProps> = ({
             }}
           >
             {header.label}
-            {sortParam.slug === header.slug && (
+            {sortParam && sortParam.slug === header.slug && (
               <>
                 {sortParam.direction === 'desc' ? (
                   <span className={styles?.indicator?.join(' ')}>&#x25B2;</span>

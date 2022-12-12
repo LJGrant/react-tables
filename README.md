@@ -4,30 +4,105 @@ A package for creating table components in React that provide easy customization
 
 ## How to use
 
-Install package with
+Install package
 
-- `npm install repo/react-tables`
+- `npm install repo/lj-react-tables`
 
-Import component into your react page
+Wrap App in TableProvidor component
 
-- `Import Table from 'react-tables`
+```jsx
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import { TableProvidor } from 'lj-react-tables'
+import App from './App'
+import Example2 from './Example2'
+
+const root = ReactDOM.createRoot(document.getElementById('root')!)
+root.render(
+    <TableProvidor>
+      <App />
+    </TableProvidor>
+)
+```
+
+Import Table component and initiating hooks into your react page
+
+- `Import Table and useCreateTable from 'lj-react-tables`
 
 ## Example Use
 
 ```jsx
-import React, { useState } from 'react'
-import Table from 'lj-react-tables'
+import React, { useCallback, useEffect } from 'react'
+import Table, {
+  useCreateTable,
+  Item,
+  BetterItem,
+  FunctionalItem,
+} from 'lj-react-tables'
 import { v4 as uuidv4 } from 'uuid'
-import { Item, BetterItem, FunctionalItem } from 'lj-react-tables/dist/lib'
+
 interface AppItem extends Item {
-  id: string
+  id: string | number
   label: BetterItem
   foo: string
   bar: string
   edit: FunctionalItem
 }
 
+const headers = [
+  {
+    label: 'Id',
+    slug: 'id',
+  },
+  {
+    label: 'Label',
+    slug: 'label',
+  },
+  {
+    label: 'Foo',
+    slug: 'foo',
+    sortable: false,
+  },
+  {
+    label: 'Barington',
+    slug: 'bar',
+    searchable: false,
+  },
+  {
+    label: 'Edit',
+    slug: 'edit',
+    searchable: false,
+    sortable: false,
+  },
+]
+
+const styles = {
+  tableContainer: ['container'],
+  searchBar: ['manage-head', 'row'],
+  searchInputWrapper: ['col-auto'],
+  buttonWrapper: ['col-auto'],
+  searchInput: ['form-control'],
+  table: [
+    'table',
+    'table-sm',
+    'table-striped',
+    'table-bordered',
+    'table-hover',
+  ],
+}
+
 const App = () => {
+  const {
+    items,
+    setItems,
+    setActions,
+    setHeaders,
+    setStyles,
+    removeItems,
+    addItems,
+    destroyTable,
+  } = useCreateTable('one')
+
   const displayItem = (item: AppItem): React.ReactNode => (
     <button onClick={() => alert(item.label.value)}>{item.bar} Me</button>
   )
@@ -56,44 +131,15 @@ const App = () => {
     return leItems
   }
 
-  const [items, setItems] = useState<AppItem[]>(makeItems(8))
-
-  const headers = [
-    {
-      label: 'Id',
-      slug: 'id',
+  const deleteItems = useCallback(
+    (deleteItems: AppItem[]): void => {
+      removeItems(deleteItems.map((item) => item.id))
     },
-    {
-      label: 'Label',
-      slug: 'label',
-    },
-    {
-      label: 'Foo',
-      slug: 'foo',
-      sortable: false,
-    },
-    {
-      label: 'Barington',
-      slug: 'bar',
-      searchable: false,
-    },
-    {
-      label: 'Edit',
-      slug: 'edit',
-      searchable: false,
-      sortable: false,
-    },
-  ]
-
-  const deleteItems = (items: AppItem[]): void => {
-    const ids = items.map((item) => item.id)
-    setItems((prevState) => [
-      ...prevState.filter((item) => !ids.includes(item.id)),
-    ])
-  }
+    [items]
+  )
 
   const addItem = (): void => {
-    setItems((prevState) => [...prevState, ...makeItems(1)])
+    addItems(makeItems(1))
   }
 
   const actions = [
@@ -109,31 +155,30 @@ const App = () => {
     },
   ]
 
-  const styles = {
-    tableContainer: ['container'],
-    searchBar: ['manage-head', 'row'],
-    searchInputWrapper: ['col-auto'],
-    buttonWrapper: ['col-auto'],
-    searchInput: ['form-control'],
-    table: [
-      'table',
-      'table-sm',
-      'table-striped',
-      'table-bordered',
-      'table-hover',
-    ],
+  const clgItems = () => {
+    console.log(items)
   }
+
+  useEffect(() => {
+    setItems(makeItems(8))
+    setActions(actions)
+    setHeaders(headers)
+    setStyles(styles)
+
+    return function cleanUp() {
+      destroyTable()
+    }
+  }, [])
 
   return (
     <div className="container">
       <h1>Fun with tables...</h1>
+      <button onClick={clgItems}>Click Me</button>
       <div className="row">
         <Table
-          styles={styles}
-          headers={headers}
-          items={items}
+          id={'one'}
           search={true}
-          actions={actions}
+          draggable={true}
         />
       </div>
     </div>
@@ -142,7 +187,26 @@ const App = () => {
 
 export default App
 
+
 ```
+
+## useCreateTable and useTable Hooks
+
+These hooks provide access to the table state and functions to set up properties of the table including the items, headers, styles, and action buttons.
+
+- setItems: sets items to show in the table
+- removeItems: removes row items
+- addItems: adds row items without removing existing rows
+- getItems: returns an array of existing array items
+- getItemById: returns a specific item by it's id
+- getItemsById: returns an array of items when provided with an array of ids
+- setSearch: provides control of the search param outside of the inbuilt search bar
+- setHeaders: sets headers of table
+- setMasterCheck: provides control of the master check box outside it's normal checkbox
+- setActions: sets action buttons
+- setStyles: sets styling classnames on various components
+- getSelectedItems: returns items who's check boxes have been checked
+- getFilteredItems: return items filtered by the search param
 
 ## Items & Headers
 

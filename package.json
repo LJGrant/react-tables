@@ -1,6 +1,6 @@
 {
   "name": "lj-react-tables",
-  "version": "1.0.5",
+  "version": "2.0.0",
   "description": "Table component that allows for custom layout and button functionality",
   "author": "Grant McCarty",
   "license": "ISC",
@@ -29,7 +29,6 @@
     "@types/react-dom": "^18.0.5",
     "babel-core": "^6.26.3",
     "babel-runtime": "^6.26.0",
-    "react-scripts": "^5.0.1",
     "rollup": "^2.75.6",
     "rollup-plugin-sass": "^1.2.12",
     "rollup-plugin-typescript2": "^0.32.1",
@@ -50,5 +49,10 @@
       "react-app",
       "react-app/jest"
     ]
+  },
+  "dependencies": {
+    "immutability-helper": "^3.1.1",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1"
   }
 }

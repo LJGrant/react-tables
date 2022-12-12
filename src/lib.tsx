@@ -35,12 +35,12 @@ export interface Header {
 }
 
 export type Item = {
-  id: string | number | BetterItem | FunctionalItem
+  id: string | number
   [key: string]: string | number | BetterItem | FunctionalItem
 }
 
 export interface SortParam {
-  slug: string
+  slug: string | null
   direction: string
 }
 
@@ -58,4 +58,23 @@ export interface Styles {
   th?: string[]
   td?: string[]
   indicator?: string[]
+}
+
+export type MasterCheck = 'checked' | 'unchecked' | 'indeterminate'
+
+export type TableState = {
+  items: Item[]
+  filteredItemsById: (number | string)[]
+  selectedItemsById: (number | string)[]
+  headers: Header[]
+  masterCheck: MasterCheck
+  searchParam: string
+  sortParam?: SortParam
+  actions: Action[]
+  styles?: Styles
+}
+
+export type Table = {
+  id: string | number
+  state: TableState
 }
