@@ -184,10 +184,18 @@ const useTable = (id: number | string) => {
     }, [] as Item[])
   }
   const setSelectedItems = (ids: (number | string)[]) => {
+    let newMaster = 'indeterminate' as MasterCheck
+    if (ids.length === 0) {
+      newMaster = 'unchecked'
+    } else if (ids.length === items.length) {
+      newMaster = 'checked'
+    }
+    console.log(newMaster)
     setState((prev) => {
       return {
         ...prev,
         selectedItemsById: ids,
+        masterCheck: newMaster,
       }
     })
   }

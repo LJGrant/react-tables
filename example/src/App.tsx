@@ -67,6 +67,7 @@ const App = () => {
     removeItems,
     addItems,
     destroyTable,
+    setSelectedItems,
   } = useCreateTable('one')
 
   const displayItem = (item: AppItem): React.ReactNode => (
@@ -97,6 +98,10 @@ const App = () => {
     return leItems
   }
 
+  const set = (ids: (number | string)[]) => {
+    setSelectedItems(ids)
+  }
+
   const deleteItems = useCallback(
     (deleteItems: AppItem[]): void => {
       removeItems(deleteItems.map((item) => item.id))
@@ -123,6 +128,7 @@ const App = () => {
 
   const clgItems = () => {
     console.log(items)
+    set(items.map((item) => item.id))
   }
 
   useEffect(() => {
